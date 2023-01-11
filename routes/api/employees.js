@@ -1,14 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const { getAllEmployees, postEmployees,putEmployees,deleteEmployees,paramsEmployees } = require("../../controllers/employeesController");
+const { getAllEmployees, postEmployees, putEmployees, deleteEmployees, paramsEmployees } = require("../../controllers/employeesController").default;
 
-router
-  .route("/")
-  .get(getAllEmployees)
-  .post(postEmployees)
-  .put(putEmployees)
-  .delete(deleteEmployees);
+router.route("/").get(getAllEmployees).post(postEmployees).put(putEmployees).delete(deleteEmployees);
 
 router.route("/:id").get(paramsEmployees);
 

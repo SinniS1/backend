@@ -7,7 +7,7 @@ const cors = require("cors");
 const PORT = process.env.PORT || 3000;
 
 // Custom middleware
-app.use(logger);
+app.use(logger); // -> uncomment in when need to get logs details
 // CORS -> Cross Origin Resource Sharing
 
 app.use(cors(require("./config/corsOption")));
@@ -24,8 +24,9 @@ app.use(express.json(path.join(__dirname, "data", "data.json")));
 app.use(express.static(path.join(__dirname, "/public")));
 
 // routers
-app.use("/subdir", require("./routes/subdir"));
-app.use("/employees", require("./routes/api/employees.js"))
-app.use("/", require("./routes/root"));
+app.use("/employees", require("./routes/api/employees.js"));
+app.use("/", require("./routes/root.js"));
+
+app.use(errorHandler)
 
 app.listen(PORT, () => console.log(`Server is activated on localhost:${PORT} `));
