@@ -24,9 +24,11 @@ app.use(express.json(path.join(__dirname, "data", "data.json")));
 app.use(express.static(path.join(__dirname, "/public")));
 
 // routers
+app.use("/auth", require("./routes/authUser.js"));
+app.use("/register", require("./routes/register.js"));
 app.use("/employees", require("./routes/api/employees.js"));
 app.use("/", require("./routes/root.js"));
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server is activated on localhost:${PORT} `));
