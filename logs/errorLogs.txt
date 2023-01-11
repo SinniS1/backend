@@ -1,0 +1,7 @@
+09572023	05:57:21	84299afd-cc7c-40d1-9d6f-2cfe0f33152d	Error	Not allowed to enter this server
+09592023	05:59:14	268ab4c8-be4c-4a89-84af-7e891d68c308	Error	Not allowed to enter this server
+09022023	06:02:07	b2a27b7f-244d-4a0c-8f3c-a8b0541493fd	Error	undefined is not allowed
+09022023	06:02:17	1d78681b-853b-497a-890f-0f7752c69b1c	Error	https://www.google.co.in is not allowed
+09022023	06:02:18	81b26c58-5076-4311-ac97-5830b93645e0	Error	https://www.google.co.in is not allowed
+09022023	06:02:32	2384b9e6-3526-481e-9ac1-1286b4738af0	Error	https://www.google.co.in is not allowed
+09022023	06:02:32	0a471278-ae81-4acf-bb53-2945aac38630	Error	https://www.google.co.in is not allowed

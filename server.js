@@ -1,92 +1,34 @@
-const http = require("http");
 const path = require("path");
-const fs = require("fs");
-const fsPromises = require("fs").promises;
+const express = require("express");
+const app = express();
+const { logger } = require("./middleware/logEvents");
+const errorHandler = require("./middleware/errorEvents");
+const cors = require("cors");
+const PORT = process.env.PORT || 3000;
 
-const logEvents = require("./logEvents");
-const EventEmitter = require("events");
-const { da } = require("date-fns/locale");
-class Emitter extends EventEmitter {}
-const myEmitter = new Emitter();
-myEmitter.on("log", (msg, fileName) => logEvents(msg, fileName));
+// Custom middleware
+app.use(logger); // -> uncomment in when need to get logs details
+// CORS -> Cross Origin Resource Sharing
 
-const PORT = process.env.PORT || 3500;
-// function to serve the request
-const serveFile = async (filePath, contentType, Response) => {
-  try {
-    const rawData = await fs.promises.readFile(filePath, !contentType === "image" ? "utf8" : "");
-    const data = contentType === "application/json" ? JSON.parse(rawData) : rawData;
-    Response.writeHead(filePath.includes("404.html") ? 404 : 200, { "Content-Type": contentType });
-    Response.end(contentType === "application/json" ? JSON.stringify(data) : data);
-  } catch (error) {
-    myEmitter.emit("log", `${error.name}:\t${error.message}`, "errorLog.txt");
-    console.log(error);
-    Response.statusCode = 500;
-    Response.end();
-  }
-};
+app.use(cors(require("./config/corsOption")));
 
-const server = http.createServer((req, res) => {
-  myEmitter.emit("log", `${req.url}\t${req.method}`, "eventLogs.txt");
+// express have inbuild middlewares
+// urlencoded middleware
+app.use(express.urlencoded({ extended: false }));
 
-  console.log(`url: ${req.url}`, `method:${req.method}`);
-  const extension = path.extname(req.url);
+// json middleware
+app.use(express.json(path.join(__dirname, "data", "data.json")));
 
-  let contentType;
+// static files middleware
+// all static files like css ,img & text files should be in public folder which then accessed by express automatically
+app.use(express.static(path.join(__dirname, "/public")));
 
-  switch (extension) {
-    case ".css":
-      contentType = "text/css";
-      break;
-    case ".js":
-      contentType = "text/javascript";
-      break;
-    case ".json":
-      contentType = "application/json";
-      break;
-    case ".jpg":
-      contentType = "image/jpeg";
-      break;
-    case ".png":
-      contentType = "image/png";
-      break;
-    case ".txt":
-      contentType = "text/plain";
-      break;
-    default:
-      contentType = "text/html";
-  }
+// routers
+app.use("/auth", require("./routes/authUser.js"));
+app.use("/register", require("./routes/register.js"));
+app.use("/employees", require("./routes/api/employees.js"));
+app.use("/", require("./routes/root.js"));
 
-  let filePath =
-    contentType === "text/html" && req.url === "/"
-      ? path.join(__dirname, "views", "index.html")
-      : contentType === "text/html" && req.url.slice(-1) === "/"
-      ? path.join(__dirname, "views", req.url, "index.html")
-      : contentType === "text/html"
-      ? path.join(__dirname, "views", req.url)
-      : path.join(__dirname, req.url);
+app.use(errorHandler);
 
-  // makes .html extension not required in the browser
-  if (!extension && req.url.slice(-1) !== "/") filePath += ".html";
-
-  const fileExists = fs.existsSync(filePath);
-  if (fileExists) {
-    serveFile(filePath, contentType, res);
-  } else {
-    // 404
-    // 301 redirect
-    console.log(path.parse(filePath));
-    switch (path.parse(filePath).base) {
-      case "redirect.html":
-        res.writeHead(301, { Location: "/new-page.html" });
-        res.end();
-        break;
-      default:
-        serveFile(path.join(__dirname, "views", "404.html"), "text/html", res);
-
-        break;
-    }
-  }
-});
-
-server.listen(PORT, () => console.log(`Server is activated on localhost:${PORT} `));
+app.listen(PORT, () => console.log(`Server is activated on localhost:${PORT} `));
