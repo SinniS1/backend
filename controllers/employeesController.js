@@ -54,7 +54,7 @@ const paramsEmployees = (req, res) => {
   res.json(employee);
 };
 
-export default {
+module.exports = {
   getAllEmployees,
   postEmployees,
   putEmployees,
